@@ -1,4 +1,405 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head><script src="/_sdk/telemetry_sdk.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroFuturo Tech</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            agro: {
+              blue: '#0a2463',
+              celeste: '#5cb8e4',
+              metallic: '#4a7c9b',
+              green: '#2d8a4e',
+              yellow: '#f0c808',
+              gold: '#c9973b',
+              dark: '#0d1117',
+              light: '#f8fafc'
+            }
+          },
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            mono: ['Space Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    .app-root { height: 100%; overflow-y: auto; overflow-x: hidden; }
+    
+    .hero-gradient {
+      background: linear-gradient(135deg, #0a2463 0%, #1a3a7a 30%, #4a7c9b 70%, #2d8a4e 100%);
+    }
+    
+    .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(10,36,99,0.15); }
+    
+    .img-placeholder {
+      background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+      border-radius: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 220px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .img-placeholder:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(10,36,99,0.15); }
+    .img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 1rem; }
+    
+    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+    .accordion-content.open { max-height: 2000px; }
+    
+    .accessibility-panel {
+      position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 9999;
+      background: #0a2463; border-radius: 1rem; padding: 1rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3); color: white;
+      transition: transform 0.3s ease;
+    }
+    .accessibility-panel.collapsed { transform: scale(0); pointer-events: none; }
+    .accessibility-toggle {
+      position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 10000;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: #0a2463; color: white; border: 2px solid #5cb8e4;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    .dark-mode { background: #0d1117 !important; color: #e6edf3 !important; }
+    .dark-mode .card-light { background: #161b22 !important; border-color: #30363d !important; color: #e6edf3 !important; }
+    .dark-mode .hero-gradient { background: linear-gradient(135deg, #050d1d 0%, #0a1628 30%, #1a3a5a 70%, #0f3d22 100%); }
+    
+    .fade-in { opacity: 0; transform: translateY(20px); animation: fadeUp 0.6s ease forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    
+    .toast {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 99999;
+      padding: 1rem 1.5rem; border-radius: 0.75rem;
+      background: #2d8a4e; color: white; font-weight: 500;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      transform: translateX(120%); transition: transform 0.3s ease;
+    }
+    .toast.show { transform: translateX(0); }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full">
+  <div class="app-root font-heading" id="app-root"><!-- Toast -->
+   <div id="toast" class="toast"></div><!-- HERO SECTION -->
+   <header class="hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+     <svg width="100%" height="100%">
+      <pattern id="grid" width="40" height="40" patternunits="userSpaceOnUse">
+       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5" />
+      </pattern><rect width="100%" height="100%" fill="url(#grid)" />
+     </svg>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-6 py-24 md:py-32 text-center">
+     <p class="font-mono text-agro-celeste text-sm tracking-widest uppercase mb-4 fade-in">AgroFuturo 2026</p>
+     <h1 id="hero-title" class="text-3xl md:text-5xl lg:text-6xl font-800 text-white leading-tight mb-6 fade-in" style="animation-delay:0.1s">Tecnologia Agrícola Reforça<br>
+      o Papel do Brasil</h1>
+     <p id="hero-subtitle" class="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto mb-8 font-light fade-in" style="animation-delay:0.2s">Inovação, inteligência artificial e sustentabilidade transformando o campo brasileiro em referência mundial.</p><a href="#conteudo" id="cta-btn" class="inline-block bg-agro-yellow text-agro-dark font-bold px-8 py-4 rounded-xl hover:bg-agro-gold transition-colors shadow-lg fade-in" style="animation-delay:0.3s"> Saiba Mais </a>
+    </div>
+   </header><!-- MAIN CONTENT -->
+   <main id="main-content"><!-- Images Row -->
+    <section class="max-w-7xl mx-auto px-6 py-16">
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="img-placeholder"><img src="Foto1.png" alt="Tecnologia no campo - drones e sensores agrícolas">
+      </div>
+      <div class="img-placeholder"><img src="Foto2.png" alt="Lavoura sustentável com inovação tecnológica">
+      </div>
+      <div class="img-placeholder"><img src="Foto3.png" alt="Inteligência artificial aplicada à agricultura">
+      </div>
+     </div>
+    </section><!-- Content Section -->
+    <section id="conteudo" class="max-w-7xl mx-auto px-6 pb-16">
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><!-- Main Content - 2 cols -->
+      <div class="lg:col-span-2 space-y-8"><!-- Card 1 -->
+       <article class="card-light card-hover bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+        <h2 class="text-2xl font-bold text-agro-blue mb-4">O Brasil como Protagonista</h2>
+        <p class="text-gray-700 leading-relaxed mb-4">A agricultura sustentável ganha espaço no debate global em um momento de pressão sobre custos, segurança alimentar, energia e mudanças climáticas. Segundo <strong class="text-agro-green">Luciana Gorab</strong>, especialista em Planejamento Estratégico de Vendas, esse cenário coloca o Brasil em posição de destaque por unir produtividade, inovação e capacidade de adaptação no campo.</p>
+        <p class="text-gray-700 leading-relaxed">O avanço de tecnologias baseadas no uso de <strong class="text-agro-metallic">microrganismos</strong> nas lavouras mostra como o país pode contribuir para reduzir a dependência de fertilizantes químicos, um dos insumos mais caros e sensíveis da produção de alimentos.</p>
+       </article><!-- Card 2 -->
+       <article class="card-light card-hover bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+        <h2 class="text-2xl font-bold text-agro-blue mb-4">A Revolução dos Microrganismos</h2>
+        <p class="text-gray-700 leading-relaxed mb-4">O trabalho da microbiologista brasileira <strong class="text-agro-green">Mariangela Hungria</strong> ganhou projeção internacional após décadas dedicadas ao desenvolvimento de bactérias capazes de substituir parte dos fertilizantes industriais. Na prática, esses microrganismos capturam nitrogênio diretamente do ar e o transferem para as plantas.</p>
+        <p class="text-gray-700 leading-relaxed">O reconhecimento internacional veio com o <strong class="text-agro-gold">World Food Prize</strong>, frequentemente chamado de Nobel da Agricultura. O Brasil deixa de ser visto apenas como exportador de commodities e passa a ocupar espaço como protagonista em tecnologia agrícola sustentável.</p>
+       </article><!-- Blockquote -->
+       <blockquote class="border-l-4 border-agro-gold bg-amber-50 card-light rounded-r-2xl p-6 italic text-gray-800">
+        "Num planeta preocupado com segurança alimentar, inflação e mudanças climáticas, talvez uma das soluções mais sofisticadas do século esteja justamente onde o Brasil sempre foi forte: no campo. Porque, às vezes, o verdadeiro ouro não está no solo. Está na inteligência de quem aprende a trabalhar com ele." <cite class="block mt-3 text-sm font-semibold text-agro-blue not-italic">— Luciana Gorab</cite>
+       </blockquote><!-- Accordion: IA Benefits -->
+       <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-agro-blue mb-2">Benefícios da IA no Campo</h2>
+        <div class="accordion-item card-light bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"><button class="accordion-btn w-full text-left px-6 py-4 font-semibold text-agro-blue flex justify-between items-center hover:bg-blue-50 transition-colors" aria-expanded="false"> <span>1. Otimização de Recursos</span> <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i> </button>
+         <div class="accordion-content px-6 pb-4 text-gray-700 leading-relaxed">
+          <p>Sistemas de irrigação inteligentes, sensores e sistemas monitoram constantemente as condições do solo e das plantas, ajustando a irrigação de acordo com a necessidade real das culturas, reduzindo o desperdício de água e melhorando a saúde das plantas. Análises de dados captados por IA verificam a composição do solo e necessidades específicas da cultura.</p>
+         </div>
+        </div>
+        <div class="accordion-item card-light bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"><button class="accordion-btn w-full text-left px-6 py-4 font-semibold text-agro-blue flex justify-between items-center hover:bg-blue-50 transition-colors" aria-expanded="false"> <span>2. Monitoramento de Culturas</span> <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i> </button>
+         <div class="accordion-content px-6 pb-4 text-gray-700 leading-relaxed">
+          <p>Drones equipados com câmeras dotadas de sensores RGB e multiespectrais capturam imagens detalhadas das culturas processadas por sistemas IA. É possível detectar infestação por ervas daninhas, incidência de doenças, planejar o sentido de plantio utilizando curvas em nível e implementar bordaduras estratégicas, além de facilitar o replantio com mapeamento preciso de linhas e falhas.</p>
+         </div>
+        </div>
+        <div class="accordion-item card-light bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"><button class="accordion-btn w-full text-left px-6 py-4 font-semibold text-agro-blue flex justify-between items-center hover:bg-blue-50 transition-colors" aria-expanded="false"> <span>3. Previsibilidade e Gestão de Riscos</span> <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i> </button>
+         <div class="accordion-content px-6 pb-4 text-gray-700 leading-relaxed">
+          <p>A IA possibilita a análise de dados climáticos, históricos de produção e outras variáveis para prever o rendimento das colheitas. Isso ajuda os agricultores a planejar melhor suas atividades, otimizar a logística de colheita e minimizar perdas, além de prever eventos climáticos extremos.</p>
+         </div>
+        </div>
+        <div class="accordion-item card-light bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"><button class="accordion-btn w-full text-left px-6 py-4 font-semibold text-agro-blue flex justify-between items-center hover:bg-blue-50 transition-colors" aria-expanded="false"> <span>4. Automação</span> <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i> </button>
+         <div class="accordion-content px-6 pb-4 text-gray-700 leading-relaxed">
+          <p>Tratores, pilotos automáticos e máquinas agrícolas autônomas realizam tarefas como plantio, colheita e pulverização com alta precisão. Equipados com sistemas de navegação por GPS e sensores avançados, reduzem a necessidade de mão de obra intensiva e aumentam a eficiência operacional.</p>
+         </div>
+        </div>
+        <div class="accordion-item card-light bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"><button class="accordion-btn w-full text-left px-6 py-4 font-semibold text-agro-blue flex justify-between items-center hover:bg-blue-50 transition-colors" aria-expanded="false"> <span>5. Melhoria da Qualidade dos Produtos</span> <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i> </button>
+         <div class="accordion-content px-6 pb-4 text-gray-700 leading-relaxed">
+          <p>A aplicação seletiva em taxa variável reduz o estresse das plantas ao otimizar o uso de insumos agrícolas. A IA possibilita a rastreabilidade de cada etapa da cadeia de suprimentos, desde a fazenda até a casa do consumidor, promovendo transparência e segurança alimentar.</p>
+         </div>
+        </div>
+        <div class="accordion-item card-light bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"><button class="accordion-btn w-full text-left px-6 py-4 font-semibold text-agro-blue flex justify-between items-center hover:bg-blue-50 transition-colors" aria-expanded="false"> <span>6. Sustentabilidade</span> <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i> </button>
+         <div class="accordion-content px-6 pb-4 text-gray-700 leading-relaxed">
+          <p>A IA torna possível realizar uma aplicação mais precisa de água, fertilizantes e defensivos agrícolas para reduzir significativamente o uso desses recursos, diminuindo o impacto ambiental e promovendo uma agricultura mais sustentável e eficiente.</p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Sidebar - Form & Comments -->
+      <aside class="space-y-8"><!-- Seminar Form -->
+       <div class="card-light bg-gradient-to-br from-agro-blue to-agro-metallic rounded-2xl p-8 text-white shadow-xl">
+        <h3 class="text-xl font-bold mb-2">🌱 Seminário Online</h3>
+        <p class="text-blue-100 text-sm mb-6">Venha conhecer melhor como a IA pode ser uma aliada do Campo. Inscreva-se no nosso seminário on-line.</p>
+        <form id="seminar-form" class="space-y-4">
+         <div><label for="form-name" class="text-xs font-medium text-blue-200 block mb-1">Nome</label> <input type="text" id="form-name" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:border-agro-celeste" placeholder="Seu nome">
+         </div>
+         <div><label for="form-email" class="text-xs font-medium text-blue-200 block mb-1">E-mail</label> <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:border-agro-celeste" placeholder="seu@email.com">
+         </div>
+         <div><label for="form-city" class="text-xs font-medium text-blue-200 block mb-1">Cidade</label> <input type="text" id="form-city" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:border-agro-celeste" placeholder="Sua cidade">
+         </div>
+         <div><label for="form-state" class="text-xs font-medium text-blue-200 block mb-1">Estado</label> <input type="text" id="form-state" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:border-agro-celeste" placeholder="Seu estado">
+         </div>
+         <div><label for="form-country" class="text-xs font-medium text-blue-200 block mb-1">País</label> <input type="text" id="form-country" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:border-agro-celeste" placeholder="Seu país">
+         </div><button type="submit" id="form-submit-btn" class="w-full bg-agro-yellow text-agro-dark font-bold py-3 rounded-lg hover:bg-agro-gold transition-colors shadow-lg"> Inscrever-se </button>
+        </form>
+       </div><!-- Comments -->
+       <div class="card-light bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+        <h3 class="text-xl font-bold text-agro-blue mb-4">💬 Deixe seu Comentário</h3>
+        <form id="comment-form" class="space-y-4">
+         <div><label for="comment-name" class="text-xs font-medium text-gray-500 block mb-1">Nome</label> <input type="text" id="comment-name" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-agro-celeste" placeholder="Seu nome">
+         </div>
+         <div><label for="comment-text" class="text-xs font-medium text-gray-500 block mb-1">Comentário</label> <textarea id="comment-text" required rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-agro-celeste resize-none" placeholder="Escreva seu comentário..."></textarea>
+         </div><button type="submit" id="comment-submit-btn" class="w-full bg-agro-green text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors"> Enviar Comentário </button>
+        </form>
+       </div>
+      </aside>
+     </div>
+    </section>
+   </main><!-- FOOTER -->
+   <footer class="bg-agro-dark text-white py-12">
+    <div class="max-w-7xl mx-auto px-6">
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div>
+       <h4 class="font-bold text-agro-celeste mb-3">Referências</h4>
+       <ul class="text-gray-400 text-sm space-y-1">
+        <li>• World Food Prize Foundation - worldfoodprize.org</li>
+        <li>• Embrapa - Pesquisa em fixação biológica de nitrogênio</li>
+        <li>• FAO - Organização das Nações Unidas para Alimentação e Agricultura</li>
+        <li>• Revista Pesquisa FAPESP - Inovação agrícola brasileira</li>
+        <li>• McKinsey Global Institute - AI in Agriculture Report</li>
+       </ul>
+      </div>
+      <div class="md:text-right">
+       <h4 class="font-bold text-agro-celeste mb-3">Sobre</h4>
+       <p class="text-gray-400 text-sm">Conteúdo baseado em análises de especialistas em planejamento estratégico agrícola e pesquisa em microbiologia aplicada à agricultura tropical.</p>
+      </div>
+     </div>
+     <div class="border-t border-gray-800 pt-6 text-center">
+      <p class="font-mono text-agro-gold text-sm">AgroFuturo 2026 ° Conectando a inteligência tecnológica à terra de forma sustentável</p>
+     </div>
+    </div>
+   </footer><!-- Accessibility Toggle --> <button class="accessibility-toggle" id="a11y-toggle" aria-label="Abrir painel de acessibilidade"> <i data-lucide="accessibility" class="w-6 h-6"></i> </button> <!-- Accessibility Panel -->
+   <div class="accessibility-panel collapsed" id="a11y-panel" role="region" aria-label="Painel de acessibilidade">
+    <p class="font-bold text-sm mb-3 text-agro-celeste">Acessibilidade</p>
+    <div class="space-y-2"><button id="a11y-increase" class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-2"> <i data-lucide="plus" class="w-4 h-4"></i> Aumentar Fonte </button> <button id="a11y-decrease" class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-2"> <i data-lucide="minus" class="w-4 h-4"></i> Diminuir Fonte </button> <button id="a11y-theme" class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-2"> <i data-lucide="moon" class="w-4 h-4"></i> Modo Escuro/Claro </button> <button id="a11y-speak" class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-2"> <i data-lucide="volume-2" class="w-4 h-4"></i> Leitura por Voz </button> <button id="a11y-stop" class="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-white/10 transition flex items-center gap-2"> <i data-lucide="volume-x" class="w-4 h-4"></i> Parar Leitura </button>
+    </div>
+   </div>
+  </div>
+  <script>
+  // ===== CONFIG & SDK INIT =====
+  const defaultConfig = {
+    hero_title: 'Tecnologia Agrícola Reforça<br>o Papel do Brasil',
+    hero_subtitle: 'Inovação, inteligência artificial e sustentabilidade transformando o campo brasileiro em referência mundial.',
+    cta_button_text: 'Saiba Mais',
+    primary_color: '#0a2463',
+    surface_color: '#ffffff',
+    text_color: '#1f2937',
+    accent_color: '#2d8a4e',
+    highlight_color: '#f0c808',
+    font_family: 'Outfit',
+    font_size: 16
+  };
 
+  function applyConfig(config) {
+    const title = document.getElementById('hero-title');
+    const subtitle = document.getElementById('hero-subtitle');
+    const cta = document.getElementById('cta-btn');
+    if (title) title.innerHTML = config.hero_title || defaultConfig.hero_title;
+    if (subtitle) subtitle.textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
+    if (cta) cta.textContent = config.cta_button_text || defaultConfig.cta_button_text;
+
+    const font = config.font_family || defaultConfig.font_family;
+    document.body.style.fontFamily = `${font}, sans-serif`;
+
+    const size = config.font_size || defaultConfig.font_size;
+    document.documentElement.style.fontSize = size + 'px';
+  }
+
+  window.elementSdk.init({
+    defaultConfig,
+    onConfigChange: async (config) => { applyConfig(config); },
+    mapToCapabilities: (config) => ({
+      recolorables: [
+        { get: () => config.primary_color || defaultConfig.primary_color, set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); }},
+        { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }},
+        { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); }},
+        { get: () => config.accent_color || defaultConfig.accent_color, set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); }},
+        { get: () => config.highlight_color || defaultConfig.highlight_color, set: (v) => { config.highlight_color = v; window.elementSdk.setConfig({ highlight_color: v }); }}
+      ],
+      borderables: [],
+      fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }},
+      fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }}
+    }),
+    mapToEditPanelValues: (config) => new Map([
+      ['hero_title', config.hero_title || defaultConfig.hero_title],
+      ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
+      ['cta_button_text', config.cta_button_text || defaultConfig.cta_button_text]
+    ])
+  });
+
+  // ===== DATA SDK =====
+  const dataHandler = { onDataChanged(data) {} };
+  window.dataSdk.init(dataHandler);
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ===== FORMS =====
+  document.getElementById('seminar-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('form-submit-btn');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    const result = await window.dataSdk.create({
+      type: 'seminar',
+      name: document.getElementById('form-name').value,
+      email: document.getElementById('form-email').value,
+      city: document.getElementById('form-city').value,
+      state: document.getElementById('form-state').value,
+      country: document.getElementById('form-country').value,
+      comment: '',
+      created_at: new Date().toISOString()
+    });
+    btn.disabled = false; btn.textContent = 'Inscrever-se';
+    if (result.isOk) { showToast('Inscrição realizada com sucesso! ✅'); e.target.reset(); }
+    else { showToast('Erro ao enviar. Tente novamente.'); }
+  });
+
+  document.getElementById('comment-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('comment-submit-btn');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    const result = await window.dataSdk.create({
+      type: 'comment',
+      name: document.getElementById('comment-name').value,
+      email: '',
+      city: '',
+      state: '',
+      country: '',
+      comment: document.getElementById('comment-text').value,
+      created_at: new Date().toISOString()
+    });
+    btn.disabled = false; btn.textContent = 'Enviar Comentário';
+    if (result.isOk) { showToast('Comentário enviado! 💬'); e.target.reset(); }
+    else { showToast('Erro ao enviar. Tente novamente.'); }
+  });
+
+  // ===== ACCORDION =====
+  document.querySelectorAll('.accordion-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const content = btn.nextElementSibling;
+      const icon = btn.querySelector('[data-lucide]');
+      const isOpen = content.classList.contains('open');
+      document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
+      document.querySelectorAll('.accordion-btn [data-lucide]').forEach(i => i.style.transform = 'rotate(0deg)');
+      document.querySelectorAll('.accordion-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+      if (!isOpen) {
+        content.classList.add('open');
+        icon.style.transform = 'rotate(180deg)';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // ===== ACCESSIBILITY =====
+  let a11yOpen = false;
+  document.getElementById('a11y-toggle').addEventListener('click', () => {
+    a11yOpen = !a11yOpen;
+    document.getElementById('a11y-panel').classList.toggle('collapsed', !a11yOpen);
+    document.getElementById('a11y-toggle').style.opacity = a11yOpen ? '0' : '1';
+    document.getElementById('a11y-toggle').style.pointerEvents = a11yOpen ? 'none' : 'auto';
+  });
+  document.getElementById('a11y-panel').addEventListener('mouseleave', () => {
+    a11yOpen = false;
+    document.getElementById('a11y-panel').classList.add('collapsed');
+    document.getElementById('a11y-toggle').style.opacity = '1';
+    document.getElementById('a11y-toggle').style.pointerEvents = 'auto';
+  });
+
+  let currentFontSize = 16;
+  document.getElementById('a11y-increase').addEventListener('click', () => {
+    currentFontSize = Math.min(24, currentFontSize + 2);
+    document.documentElement.style.fontSize = currentFontSize + 'px';
+  });
+  document.getElementById('a11y-decrease').addEventListener('click', () => {
+    currentFontSize = Math.max(12, currentFontSize - 2);
+    document.documentElement.style.fontSize = currentFontSize + 'px';
+  });
+
+  let darkMode = false;
+  document.getElementById('a11y-theme').addEventListener('click', () => {
+    darkMode = !darkMode;
+    document.getElementById('app-root').classList.toggle('dark-mode', darkMode);
+  });
+
+  document.getElementById('a11y-speak').addEventListener('click', () => {
+    window.speechSynthesis.cancel();
+    const mainContent = document.getElementById('main-content');
+    const text = mainContent.innerText;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+  });
+
+  document.getElementById('a11y-stop').addEventListener('click', () => {
+    window.speechSynthesis.cancel();
+  });
+
+  // Init Lucide
+  lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a097e29dde48f2b4',t:'MTc4MTA4OTM2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
 
 
